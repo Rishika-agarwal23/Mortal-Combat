@@ -19,7 +19,7 @@ This project is designed for two players, with each player wearing one smart glo
 
 2x MPU6050 Sensors: 6-DoF IMUs used to track the acceleration and gyroscope data of the players' hands.
 
-2x 0.96" SSD1306 OLED Displays: I2C screens that provide a real-time UI, showing player names and live health bars.
+3x 0.96" SSD1306 OLED Displays: I2C screens that provide a real-time UI, showing player names and live health bars.
 
 2x Blue LEDs & 2x Red LEDs: Localized visual indicators to confirm when an attack has successfully launched.
 
