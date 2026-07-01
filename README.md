@@ -15,7 +15,7 @@ The Knockout: The first player's health to reach 0 triggers the "FATALITY" scree
 🛠️ Hardware Architecture
 This project is designed for two players, with each player wearing one smart glove. The total hardware required for the complete two-player system is:
 
-2x ESP32 Dev Modules: The "brains" of the operation, handling sensor data, game logic, and wireless communication.
+3x ESP32 Dev Modules: The "brains" of the operation, handling sensor data, game logic, and wireless communication.
 
 2x MPU6050 Sensors: 6-DoF IMUs used to track the acceleration and gyroscope data of the players' hands.
 
