@@ -25,7 +25,7 @@ This project is designed for two players, with each player wearing one smart glo
 
 4x 220Ω - 330Ω Resistors: Crucial for protecting the ESP32 pins from LED current draw.
 
-2x Portable Power Sources: Small LiPo batteries or USB power banks to ensure the gloves remain completely wireless and un-tethered.
+3x Portable Power Sources: Small LiPo batteries or USB power banks to ensure the gloves remain completely wireless and un-tethered.
 
 📡 Software & Communication Protocol
 The backbone of this project is the ESP-NOW protocol.
