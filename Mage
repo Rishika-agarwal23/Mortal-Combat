@@ -1,0 +1,343 @@
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
+
+Adafruit_SSD1306 display(
+SCREEN_WIDTH,
+SCREEN_HEIGHT,
+&Wire,
+-1
+);
+
+
+// Animation
+int frame = 0;
+
+unsigned long lastFrameTime = 0;
+int frameDelay = 400;
+
+
+// Energy
+int energy = 100;
+
+
+
+// Magic ball effect
+
+void drawMagicBall(int x,int y)
+{
+
+display.drawCircle(
+x,
+y,
+4,
+WHITE
+);
+
+display.drawPixel(
+x+2,
+y-2,
+WHITE
+);
+
+display.drawPixel(
+x-2,
+y+2,
+WHITE
+);
+
+}
+
+
+
+
+// Mage Character
+
+void drawMage(int x,int y,bool weak)
+{
+
+
+int head=y;
+int body=y+6;
+int leg=y+17;
+int ground=y+25;
+
+
+
+// weak mode
+
+if(weak)
+{
+
+display.drawCircle(
+x,
+head,
+3,
+WHITE
+);
+
+display.drawLine(
+x,
+body,
+x,
+leg,
+WHITE
+);
+
+return;
+
+}
+
+
+
+int px=x;
+
+
+
+// WALK animation
+
+if(frame==1)
+{
+px+=4;
+}
+
+
+
+
+// head
+
+display.drawCircle(
+px,
+head,
+4,
+WHITE
+);
+
+
+
+// wizard hat
+
+display.drawLine(
+px-5,
+head-4,
+px,
+head-10,
+WHITE
+);
+
+display.drawLine(
+px,
+head-10,
+px+5,
+head-4,
+WHITE
+);
+
+
+
+
+// body robe
+
+display.drawLine(
+px,
+body,
+px,
+leg,
+WHITE
+);
+
+
+display.drawLine(
+px-5,
+leg,
+px+5,
+leg,
+WHITE
+);
+
+
+
+// hands
+
+display.drawLine(
+px,
+body+3,
+px-6,
+body+6,
+WHITE
+);
+
+
+// Staff
+
+display.drawLine(
+px+6,
+body,
+px+6,
+ground,
+WHITE
+);
+
+
+
+// Magic animation
+
+
+if(frame==2)
+{
+
+// charging
+
+display.drawCircle(
+px+10,
+body+2,
+3,
+WHITE
+);
+
+}
+
+
+
+
+if(frame==3)
+{
+
+// throw magic ball
+
+drawMagicBall(
+px+18,
+body+2
+);
+
+
+display.drawLine(
+px+5,
+body+3,
+px+12,
+body+3,
+WHITE
+);
+
+}
+
+
+
+}
+
+
+
+
+void setup()
+{
+
+Wire.begin();
+
+
+display.begin(
+SSD1306_SWITCHCAPVCC,
+0x3C
+);
+
+
+display.clearDisplay();
+
+display.display();
+
+}
+
+
+
+
+void loop()
+{
+
+
+// automatic frames
+
+if(millis()-lastFrameTime >= frameDelay)
+{
+
+frame++;
+
+
+if(frame>3)
+frame=0;
+
+
+lastFrameTime=millis();
+
+}
+
+
+
+
+display.clearDisplay();
+
+
+
+bool weak=(energy<=15);
+
+
+
+drawMage(
+60,
+20,
+weak
+);
+
+
+
+
+// Energy bar
+
+display.drawRect(
+30,
+48,
+70,
+8,
+WHITE
+);
+
+
+int fill=map(
+energy,
+0,
+100,
+0,
+68
+);
+
+
+
+if(fill>0)
+
+display.fillRect(
+31,
+49,
+fill,
+6,
+WHITE
+);
+
+
+
+display.setTextSize(1);
+display.setTextColor(WHITE);
+
+display.setCursor(
+45,
+58
+);
+
+
+
+
+
+display.display();
+
+
+}
