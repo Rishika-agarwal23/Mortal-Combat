@@ -1,0 +1,359 @@
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
+
+Adafruit_SSD1306 display(
+SCREEN_WIDTH,
+SCREEN_HEIGHT,
+&Wire,
+-1
+);
+
+
+// Animation
+int frame = 0;
+
+unsigned long lastFrameTime = 0;
+int frameDelay = 300;
+
+
+// Energy
+int energy = 100;
+
+
+
+// Shadow speed effect
+void drawShadowEffect(int x,int y)
+{
+  display.drawLine(x-20,y,x-5,y,WHITE);
+  display.drawLine(x-15,y+5,x-3,y+5,WHITE);
+}
+
+
+
+// Ninja Character
+
+void drawNinja(int x,int y,bool weak)
+{
+
+int head = y;
+int body = y+5;
+int leg  = y+15;
+int ground = y+22;
+
+
+
+// weak condition
+
+if(weak)
+{
+ display.drawCircle(x,head,3,WHITE);
+
+ display.drawLine(
+ x,body,
+ x-3,leg,
+ WHITE
+ );
+
+ display.drawLine(
+ x,leg,
+ x-5,ground,
+ WHITE
+ );
+
+ display.drawLine(
+ x,leg,
+ x+2,ground,
+ WHITE
+ );
+
+ return;
+}
+
+
+
+int px=x;
+
+
+
+// Frame 2 Dash
+
+if(frame==2)
+{
+ px+=12;
+
+ drawShadowEffect(x,y+10);
+}
+
+
+
+// Head
+
+display.drawCircle(
+px,
+head,
+3,
+WHITE
+);
+
+
+// Body
+
+display.drawLine(
+px,
+body,
+px,
+leg,
+WHITE
+);
+
+
+// Hands
+
+display.drawLine(
+px,
+body+2,
+px-5,
+body+5,
+WHITE
+);
+
+
+display.drawLine(
+px,
+body+2,
+px+5,
+body+3,
+WHITE
+);
+
+
+
+
+// Legs
+
+
+if(frame==1)
+{
+
+// walking
+
+display.drawLine(
+px,
+leg,
+px-5,
+ground,
+WHITE
+);
+
+
+display.drawLine(
+px,
+leg,
+px+6,
+ground,
+WHITE
+);
+
+}
+
+
+else
+{
+
+display.drawLine(
+px,
+leg,
+px-3,
+ground,
+WHITE
+);
+
+
+display.drawLine(
+px,
+leg,
+px+3,
+ground,
+WHITE
+);
+
+}
+
+
+
+
+// Weapon / Attack
+
+
+if(frame==3)
+{
+
+// Shadow strike sword
+
+display.drawLine(
+px+5,
+body+2,
+px+15,
+body-5,
+WHITE
+);
+
+
+display.drawLine(
+px+5,
+body+3,
+px+15,
+body-4,
+WHITE
+);
+
+}
+
+
+else
+{
+
+// small dagger
+
+display.drawLine(
+px+5,
+body+3,
+px+10,
+body+8,
+WHITE
+);
+
+}
+
+
+
+}
+
+
+
+
+void setup()
+{
+
+Wire.begin();
+
+
+display.begin(
+SSD1306_SWITCHCAPVCC,
+0x3C
+);
+
+
+display.clearDisplay();
+
+display.display();
+
+}
+
+
+
+
+void loop()
+{
+
+
+// change frame automatically
+
+if(millis()-lastFrameTime >= frameDelay)
+{
+
+frame++;
+
+
+if(frame>3)
+{
+ frame=0;
+}
+
+
+lastFrameTime=millis();
+
+}
+
+
+
+
+display.clearDisplay();
+
+
+
+// weak mode
+
+bool weak = (energy<=15);
+
+
+
+// draw player
+
+drawNinja(
+60,
+20,
+weak
+);
+
+
+
+
+// Energy bar
+
+display.drawRect(
+30,
+48,
+70,
+8,
+WHITE
+);
+
+
+int fill = map(
+energy,
+0,
+100,
+0,
+68
+);
+
+
+if(fill>0)
+{
+
+display.fillRect(
+31,
+49,
+fill,
+6,
+WHITE
+);
+
+}
+
+
+
+
+display.setTextSize(1);
+
+display.setTextColor(WHITE);
+
+
+display.setCursor(
+45,
+58
+);
+
+
+
+
+
+display.display();
+
+
+}
