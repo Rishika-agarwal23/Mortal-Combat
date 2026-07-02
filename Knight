@@ -1,0 +1,394 @@
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
+
+Adafruit_SSD1306 display(
+SCREEN_WIDTH,
+SCREEN_HEIGHT,
+&Wire,
+-1
+);
+
+
+// Frames
+int frame = 0;
+
+unsigned long lastFrameTime = 0;
+int frameDelay = 350;
+
+
+// Health
+int energy = 100;
+
+
+
+// Knight sword
+
+void drawSword(int x,int y,bool attack)
+{
+
+if(attack)
+{
+display.drawLine(
+x,
+y,
+x+18,
+y-12,
+WHITE
+);
+
+display.drawLine(
+x,
+y+2,
+x+18,
+y-10,
+WHITE
+);
+
+}
+
+else
+{
+
+display.drawLine(
+x,
+y,
+x+10,
+y-8,
+WHITE
+);
+
+}
+
+}
+
+
+
+// Shield
+
+void drawShield(int x,int y)
+{
+
+display.drawCircle(
+x,
+y,
+5,
+WHITE
+);
+
+display.drawLine(
+x-3,y+3,
+x+3,y+3,
+WHITE
+);
+
+}
+
+
+
+// Knight
+
+void drawKnight(int x,int y,bool weak)
+{
+
+int head=y;
+int body=y+7;
+int leg=y+18;
+int ground=y+25;
+
+
+
+// weak
+
+if(weak)
+{
+
+display.drawCircle(
+x,
+head,
+4,
+WHITE
+);
+
+display.drawLine(
+x,
+body,
+x,
+leg,
+WHITE
+);
+
+return;
+
+}
+
+
+int px=x;
+
+
+
+// walking movement
+
+if(frame==1)
+px-=3;
+
+
+if(frame==2)
+px+=3;
+
+
+
+// helmet
+
+display.drawCircle(
+px,
+head,
+5,
+WHITE
+);
+
+
+// helmet line
+
+display.drawLine(
+px-5,
+head,
+px+5,
+head,
+WHITE
+);
+
+
+
+// body armor
+
+display.drawRect(
+px-5,
+body,
+10,
+10,
+WHITE
+);
+
+
+
+// legs
+
+display.drawLine(
+px-3,
+leg,
+px-5,
+ground,
+WHITE
+);
+
+display.drawLine(
+px+3,
+leg,
+px+6,
+ground,
+WHITE
+);
+
+
+
+// shield
+
+drawShield(
+px-8,
+body+5
+);
+
+
+
+// attacks
+
+
+if(frame==3)
+{
+
+// sword attack
+
+drawSword(
+px+5,
+body+2,
+true
+);
+
+}
+
+
+
+else if(frame==5)
+{
+
+// special heavy slash
+
+drawSword(
+px+5,
+body,
+true
+);
+
+
+// slash effect
+
+display.drawLine(
+px+18,
+body-12,
+px+25,
+body-12,
+WHITE
+);
+
+display.drawLine(
+px+18,
+body-8,
+px+28,
+body-8,
+WHITE
+);
+
+
+}
+
+else
+{
+
+drawSword(
+px+5,
+body+2,
+false
+);
+
+}
+
+
+
+// shield block
+
+if(frame==4)
+{
+
+display.drawCircle(
+px-10,
+body+5,
+8,
+WHITE
+);
+
+}
+
+
+
+}
+
+
+
+
+void setup()
+{
+
+Wire.begin();
+
+display.begin(
+SSD1306_SWITCHCAPVCC,
+0x3C
+);
+
+display.clearDisplay();
+display.display();
+
+}
+
+
+
+
+void loop()
+{
+
+
+// animation loop
+
+if(millis()-lastFrameTime > frameDelay)
+{
+
+frame++;
+
+if(frame>5)
+frame=0;
+
+
+lastFrameTime=millis();
+
+}
+
+
+
+
+display.clearDisplay();
+
+
+
+bool weak=(energy<=15);
+
+
+
+drawKnight(
+60,
+20,
+weak
+);
+
+
+
+// Energy bar
+
+display.drawRect(
+30,
+48,
+70,
+8,
+WHITE
+);
+
+
+int fill=map(
+energy,
+0,
+100,
+0,
+68
+);
+
+
+if(fill>0)
+display.fillRect(
+31,
+49,
+fill,
+6,
+WHITE
+);
+
+
+
+display.setTextSize(1);
+display.setTextColor(WHITE);
+
+display.setCursor(
+45,
+58
+);
+
+
+
+
+
+display.display();
+
+
+}
